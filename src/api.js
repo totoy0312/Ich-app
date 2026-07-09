@@ -1,4 +1,4 @@
-const BASE = ''  // 部署时改为后端地址，开发时 Vite 自动代理
+const BASE = import.meta.env.DEV ? '' : 'https://ich-app.vercel.app'
 
 async function request(method, path, body) {
   const opts = { method, headers: { 'Content-Type': 'application/json' } }
