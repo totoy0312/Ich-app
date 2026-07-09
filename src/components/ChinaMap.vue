@@ -106,7 +106,12 @@ const regions = [
 
 const inAppICH = ['剪纸','皮影戏','刺绣','茶道','京剧','陶瓷']
 
+let leaveTimer = null
+function onLeave() {
+  leaveTimer = setTimeout(() => { hovered.value = null }, 200)
+}
 function onEnter(r, e) {
+  clearTimeout(leaveTimer)
   hovered.value = r
   const rect = e.target.getBoundingClientRect()
   tooltipStyle.value = {
@@ -114,8 +119,7 @@ function onEnter(r, e) {
     top: rect.top - 10 + 'px',
   }
 }
-
-function onLeave() { hovered.value = null }
+function onTooltipEnter() { clearTimeout(leaveTimer) }
 
 function onVote(ichName) {
   if (!interests.value[ichName]) interests.value[ichName] = 0
@@ -172,7 +176,7 @@ const topVotes = computed(() => {
       <!-- 悬浮提示框 -->
       <Teleport to="body">
         <Transition name="fade">
-          <div v-if="hovered" class="map-tooltip" :style="tooltipStyle" @mouseenter="hovered=hovered" @mouseleave="onLeave">
+          <div v-if="hovered" class="map-tooltip" :style="tooltipStyle" @mouseenter="onTooltipEnter" @mouseleave="onLeave">
             <div class="tp-header">{{ hovered.name }}</div>
             <div class="tp-list">
               <div v-for="item in hovered.items" :key="item.name" class="tp-item">
