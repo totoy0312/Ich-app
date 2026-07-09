@@ -253,17 +253,42 @@ body {
 .upload-bar {
   background: var(--card); border-radius: var(--radius); padding: 24px 30px;
   margin-bottom: 30px; box-shadow: var(--shadow);
-  display: flex; gap: 16px; align-items: flex-end;
+  display: flex; gap: 24px; align-items: flex-start;
 }
-.upload-bar .form-group { margin-bottom: 0; flex: 1; }
+/* 上传区域 */
+.upload-zone {
+  width: 200px; height: 200px; min-width: 200px;
+  border: 2px dashed var(--border); border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; position: relative; overflow: hidden;
+  background: #fefdf9; transition: all .25s; user-select: none;
+}
+.upload-zone:hover { border-color: var(--gold); background: #fffbef; }
+.upload-zone.dragging { border-color: var(--red); background: #fff5f0; }
+.upload-plus { font-size: 48px; color: var(--gold); font-weight: 300; line-height: 1; }
+.upload-text { font-size: 14px; color: var(--text-light); margin-top: 4px; letter-spacing: 1px; }
+.upload-hint { font-size: 11px; color: #c0b8a8; margin-top: 4px; }
+.upload-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+.upload-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.55);
+  padding: 8px; text-align: center; opacity: 0; transition: opacity .2s;
+}
+.upload-zone:hover .upload-overlay { opacity: 1; }
+.upload-remove { color: #fff; font-size: 13px; cursor: pointer; }
+.upload-fields { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.upload-fields .form-group { margin-bottom: 0; }
+
 .upload-btn {
   padding: 14px 36px; border: none; border-radius: 12px;
   background: var(--red); color: #fff; font-size: 16px;
   font-weight: 700; cursor: pointer; letter-spacing: 2px;
-  transition: opacity .2s; white-space: nowrap;
+  transition: opacity .2s; white-space: nowrap; margin-top: auto; align-self: flex-start;
 }
 .upload-btn:hover { opacity: 0.9; }
 .upload-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* 作品图片 */
+.work-image { width: 100%; height: 100%; object-fit: cover; }
+.work-emoji { font-size: 50px; }
 
 /* ====== CONFETTI ====== */
 .modal-card { overflow: hidden; position: relative; }

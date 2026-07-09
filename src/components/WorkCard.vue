@@ -6,7 +6,8 @@ defineEmits(['delete'])
 <template>
   <div class="work-card">
     <div class="work-img" :style="{ background: work.bg || '#f5f0e8' }">
-      {{ categoryIcon }}
+      <img v-if="work.image" :src="work.image" class="work-image">
+      <span v-else class="work-emoji">{{ categoryIcon }}</span>
       <button class="work-delete" @click.stop="$emit('delete', work.id)" title="删除作品">✕</button>
     </div>
     <div class="work-info">
