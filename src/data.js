@@ -7,8 +7,8 @@ export const CATEGORIES = [
       { title:'剪纸基本技法入门', content:'剪纸的基本技法包括：折剪法——先将纸对折，剪出对称图案；阳剪法——保留线条，镂空背景；阴剪法——保留块面，剪去线条。初学者可从简单的窗花开始练习：取一张正方形红纸，对角折叠三次，在折好的三角形上画好图案，沿线条剪下，展开即可得到对称精美的窗花。练习时注意剪刀要锋利，运剪要稳，图案线条不宜过细以免断裂。' },
     ],
     videos:[
-      { title:'传统剪纸技法演示', desc:'非遗传承人现场展示剪纸技法，从折纸到成品全流程' },
-      { title:'剪纸里的中国故事', desc:'欣赏全国各地剪纸大师的经典作品，品味剪纸里的民俗文化' },
+      { title:'传统剪纸技法演示', desc:'非遗传承人现场展示剪纸技法，从折纸到成品全流程', url:'https://www.bilibili.com/video/BV1864y1P7Jh/?spm_id_from=333.337.search-card.all.click' },
+      { title:'剪纸里的中国故事', desc:'欣赏全国各地剪纸大师的经典作品，品味剪纸里的民俗文化', url:'https://www.bilibili.com/video/BV1xs411y7CG/?spm_id_from=333.337.search-card.all.click' },
     ]
   },
   {
@@ -19,8 +19,8 @@ export const CATEGORIES = [
       { title:'皮影制作工艺解密', content:'制作一件精美的皮影需要经过选皮、制皮、画稿、过稿、镂刻、敷彩、熨平、缀结等八道工序。皮料多选用牛皮或驴皮，经过反复刮磨使其薄而透光。雕刻是皮影制作中最关键的环节，需要用到数十种不同刀型的刻刀，讲究"推皮走刀"的技法。上色则使用传统矿物颜料，色彩经久不褪。一件精致的皮影人物，往往需要一个熟练艺人花费数日甚至数周才能完成。' },
     ],
     videos:[
-      { title:'经典皮影戏《西游记》', desc:'传统皮影戏演绎《西游记·三打白骨精》精彩片段' },
-      { title:'皮影制作全纪录', desc:'从一张牛皮到栩栩如生的皮影人物，记录完整的制作过程' },
+      { title:'经典皮影戏《西游记》', desc:'传统皮影戏演绎《西游记·三打白骨精》精彩片段', url:'https://www.bilibili.com/video/BV1dh4y1t76Q/?spm_id_from=333.337.search-card.all.click' },
+      { title:'皮影制作全纪录', desc:'从一张牛皮到栩栩如生的皮影人物，记录完整的制作过程', url:'https://www.bilibili.com/video/BV1iNV2zkEv9/?spm_id_from=333.337.search-card.all.click' },
     ]
   },
   {
@@ -31,8 +31,8 @@ export const CATEGORIES = [
       { title:'苏绣针法入门', content:'苏绣常用针法包括：齐针——线条排列整齐均匀，是最基础的针法；套针——分层相套，绣面细腻平滑，用于绣制花瓣、羽毛等；滚针——两针紧靠，线条圆润饱满，用于绣制人物轮廓；施针——用稀针分层施毛，用于表现动物毛发质感。初学者可从简单的齐针花卉图案开始练习，掌握丝线的走向和松紧度，再逐步学习更复杂的针法。' },
     ],
     videos:[
-      { title:'苏绣大师作品展示', desc:'近距离欣赏苏绣国家级传承人的传世之作，感受针尖上的艺术' },
-      { title:'刺绣入门教学', desc:'手把手教你刺绣基本针法，零基础也能绣出美丽图案' },
+      { title:'苏绣大师作品展示', desc:'近距离欣赏苏绣国家级传承人的传世之作，感受针尖上的艺术', url:'https://www.bilibili.com/video/BV1vf4y1H75m/?spm_id_from=333.337.search-card.all.click' },
+      { title:'刺绣入门教学', desc:'手把手教你刺绣基本针法，零基础也能绣出美丽图案', url:'https://www.bilibili.com/video/BV1ib411F7Jo/?spm_id_from=333.337.search-card.all.click' },
     ]
   },
   {
@@ -43,8 +43,8 @@ export const CATEGORIES = [
       { title:'功夫茶冲泡步骤详解', content:'功夫茶是流行于闽南和潮汕地区的饮茶方式，讲究"小壶小杯，细品慢饮"。冲泡步骤为：一、候汤——将水烧至沸腾；二、温壶——用沸水烫洗茶壶和茶杯；三、纳茶——将茶叶填入茶壶约七分满；四、润茶——注入少量沸水后立即倒出，唤醒茶叶；五、冲泡——高冲注水，使茶叶翻滚；六、淋壶——用沸水淋壶身保温；七、出汤——浸泡约30秒后均匀倒入各杯；八、品饮——先观色、再闻香、后品味。' },
     ],
     videos:[
-      { title:'传统茶道表演', desc:'潮汕功夫茶二十一式完整展示，领略中国茶道的仪式之美' },
-      { title:'六大茶类品鉴指南', desc:'教你如何辨别六大茶类的色香味，找到最适合自己的那一款茶' },
+      { title:'传统茶道表演', desc:'潮汕功夫茶二十一式完整展示，领略中国茶道的仪式之美', url:'https://www.bilibili.com/video/BV1d54y1m76P/?spm_id_from=333.337.search-card.all.click' },
+      { title:'六大茶类品鉴指南', desc:'教你如何辨别六大茶类的色香味，找到最适合自己的那一款茶', url:'https://www.bilibili.com/video/BV1ip4y1t7iX/?spm_id_from=333.337.search-card.all.click' },
     ]
   },
   {
@@ -55,8 +55,8 @@ export const CATEGORIES = [
       { title:'京剧经典剧目赏析', content:'《贵妃醉酒》是梅兰芳先生的代表作，讲述杨贵妃在百花亭设宴等候唐明皇，却闻讯皇帝已去别处，遂借酒浇愁的故事。《霸王别姬》讲述了项羽被围垓下，虞姬舞剑后自刎的悲壮故事，其中虞姬的剑舞是京剧舞蹈艺术的巅峰。《空城计》则是老生经典，诸葛亮在城楼上抚琴退敌，展现了运筹帷幄的智慧和从容。' },
     ],
     videos:[
-      { title:'京剧《贵妃醉酒》选段', desc:'梅派第三代传人演绎经典剧目，一颦一笑皆入戏' },
-      { title:'京剧脸谱绘制全过程', desc:'从素面到勾脸，记录京剧演员上台前的完整化妆过程' },
+      { title:'京剧《贵妃醉酒》选段', desc:'梅派第三代传人演绎经典剧目，一颦一笑皆入戏', url:'https://www.bilibili.com/video/BV1aa411F78f/?spm_id_from=333.337.search-card.all.click' },
+      { title:'京剧脸谱绘制全过程', desc:'从素面到勾脸，记录京剧演员上台前的完整化妆过程', url:'https://www.bilibili.com/video/BV1CGE2ziEfi/?spm_id_from=333.337.search-card.all.click' },
     ]
   },
   {
@@ -67,8 +67,8 @@ export const CATEGORIES = [
       { title:'景德镇制瓷工艺全解', content:'景德镇制瓷工艺有"过手七十二，方克成器"之说。主要流程包括：采石制泥——将瓷石粉碎淘洗制成瓷泥；拉坯成型——在辘轳车上将泥团拉成器型；利坯修整——用刀具将粗坯修至精确的厚薄和形状；施釉——将釉浆均匀附着于坯体表面；画坯——用青花料在坯上绘制图案；烧成——入窑以1300℃高温烧制。一件精美的青花瓷，从采石到出炉，往往需要数月时间。' },
     ],
     videos:[
-      { title:'青花瓷制作全过程', desc:'从揉泥到出窑，完整记录景德镇匠人制作一件青花瓷瓶的全过程' },
-      { title:'宋代五大名窑鉴赏', desc:'汝官哥钧定五大名窑瓷器高清展示，品味宋瓷的极致之美' },
+      { title:'青花瓷制作全过程', desc:'从揉泥到出窑，完整记录景德镇匠人制作一件青花瓷瓶的全过程', url:'https://www.bilibili.com/video/BV1YH4vzuEah/?spm_id_from=333.337.search-card.all.click' },
+      { title:'宋代五大名窑鉴赏', desc:'汝官哥钧定五大名窑瓷器高清展示，品味宋瓷的极致之美', url:'https://www.bilibili.com/video/BV1LW4y1y7HF/?spm_id_from=333.337.search-card.all.click' },
     ]
   },
 ]

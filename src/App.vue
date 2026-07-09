@@ -10,6 +10,8 @@ import MyPage from './components/MyPage.vue'
 import AuthPage from './components/AuthPage.vue'
 import ConfirmModal from './components/ConfirmModal.vue'
 import VideoModal from './components/VideoModal.vue'
+import ChinaMap from './components/ChinaMap.vue'
+import ParticleBg from './components/ParticleBg.vue'
 
 // ---- 用户认证 ----
 const users = ref(LS.get('users', {}))
@@ -68,6 +70,8 @@ function submitBooking(data) {
 }
 
 // ---- 作品 ----
+function deleteWork(workId) { works.value = works.value.filter(w => w.id !== workId) }
+
 function submitWork(data) {
   const colors = ['#f5e6d3','#e8d5c8','#dce5e0','#e0dce5','#f0e5d8','#fdf0e0']
   works.value.push({
@@ -84,47 +88,55 @@ if (!currentUser.value) page.value = 'auth'
 
 <template>
   <div class="app">
+    <ParticleBg />
     <AppHeader
       :current-page="page" :current-user="currentUser"
       @navigate="page = $event" @logout="logout"
     />
 
-    <!-- 未登录 → 认证页 -->
-    <AuthPage
-      v-if="page === 'auth'"
-      :users="users" @login="onLogin"
-    />
+    <Transition name="page-fade" mode="out-in">
+      <!-- 认证页 -->
+      <AuthPage
+        v-if="page === 'auth'" key="auth"
+        :users="users" @login="onLogin"
+      />
 
-    <template v-if="page === 'home'">
-      <HeroBanner />
-      <div class="content-area">
-        <div class="section-title">探 寻 非 遗</div>
-        <div class="cat-grid">
-          <CategoryCard v-for="cat in CATEGORIES" :key="cat.id" :category="cat" @select="openCategory" />
+      <!-- 首页 -->
+      <div v-else-if="page === 'home'" key="home">
+        <HeroBanner />
+        <div class="content-area">
+          <div class="section-title">探 寻 非 遗</div>
+          <div class="cat-grid">
+            <CategoryCard v-for="cat in CATEGORIES" :key="cat.id" :category="cat" @select="openCategory" />
+          </div>
+          <ChinaMap />
         </div>
       </div>
-    </template>
 
-    <DetailPage
-      v-if="page === 'detail'"
-      :category="currentCat" :detail-tab="detailTab" :video-bgs="VIDEO_BGS"
-      @back="goHome" @tab-change="detailTab = $event" @play-video="openVideo"
-    />
+      <!-- 分类详情 -->
+      <DetailPage
+        v-else-if="page === 'detail'" key="detail"
+        :category="currentCat" :detail-tab="detailTab" :video-bgs="VIDEO_BGS"
+        @back="goHome" @tab-change="detailTab = $event" @play-video="openVideo"
+      />
 
-    <BookingPage
-      v-if="page === 'booking'"
-      :categories="CATEGORIES" :time-slots="TIME_SLOTS" :bookings="bookings"
-      @submit="submitBooking" @back="goHome"
-    />
+      <!-- 预约 -->
+      <BookingPage
+        v-else-if="page === 'booking'" key="booking"
+        :categories="CATEGORIES" :time-slots="TIME_SLOTS" :bookings="bookings"
+        @submit="submitBooking" @back="goHome"
+      />
 
-    <MyPage
-      v-if="page === 'my'"
-      :bookings="myBookings" :works="myWorks"
-      :categories="CATEGORIES" :time-slots="TIME_SLOTS" :my-tab="myTab"
-      @tab-change="myTab = $event" @upload-work="submitWork" @back="goHome"
-    />
+      <!-- 我的 -->
+      <MyPage
+        v-else key="my"
+        :bookings="myBookings" :works="myWorks"
+        :categories="CATEGORIES" :time-slots="TIME_SLOTS" :my-tab="myTab"
+        @tab-change="myTab = $event" @upload-work="submitWork" @delete-work="deleteWork" @back="goHome"
+      />
+    </Transition>
 
-    <ConfirmModal :show="showModal" :message="modalMsg" @close="showModal = false" />
+    <ConfirmModal :show="showModal" :message="modalMsg" @close="showModal = false; page = 'my'; myTab = 'bookings'" />
     <VideoModal :show="showVideo" :title="videoTitle" @close="showVideo = false" />
 
     <div class="footer"><p>非遗传承 · 指尖上的中国 © 2026</p></div>

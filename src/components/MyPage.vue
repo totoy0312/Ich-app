@@ -4,7 +4,7 @@ import WorkCard from './WorkCard.vue'
 import UploadBar from './UploadBar.vue'
 
 const props = defineProps(['bookings', 'works', 'categories', 'timeSlots', 'myTab'])
-const emit = defineEmits(['tab-change', 'upload-work', 'back'])
+const emit = defineEmits(['tab-change', 'upload-work', 'back', 'delete-work'])
 
 function getCat(id) { return props.categories.find(c => c.id === id) || { icon:'📌', name:'未知' } }
 function timeLabel(val) { const s = props.timeSlots.find(s => s.value === val); return s ? s.label : '—' }
@@ -33,6 +33,7 @@ function timeLabel(val) { const s = props.timeSlots.find(s => s.value === val); 
       <div class="works-grid">
         <WorkCard v-for="w in works" :key="w.id" :work="w"
           :category-icon="getCat(w.catId).icon" :category-name="getCat(w.catId).name"
+          @delete="emit('delete-work', $event)"
         />
       </div>
     </div>
