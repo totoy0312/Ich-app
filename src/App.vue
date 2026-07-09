@@ -66,7 +66,8 @@ function logout() { currentUser.value = null; page.value = 'auth' }
 // ---- 预约 ----
 async function submitBooking(data) {
   try {
-    await api.createBooking({ ...data, username: currentUser.value.username })
+    const bkId = 'BK' + Date.now().toString(36).toUpperCase().slice(-8)
+   await api.createBooking({ id: bkId, ...data, username: currentUser.value.username })
     await loadBookings()
     const tl = TIME_SLOTS.find(s => s.value === data.time)
     modalMsg.value = `已预约【${data.catName}】体验课，${data.date} ${tl ? tl.label : ''}，我们不见不散！`
@@ -80,7 +81,8 @@ async function deleteWork(workId) {
 }
 async function submitWork(data) {
   try {
-    await api.createWork({ ...data, username: currentUser.value.username })
+    const wkId = 'WK' + Date.now().toString(36).toUpperCase().slice(-8)
+    await api.createWork({ id: wkId, ...data, username: currentUser.value.username })
     await loadWorks()
   } catch (e) { alert(e.message) }
 }
