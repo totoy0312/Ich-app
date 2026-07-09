@@ -12,7 +12,8 @@ app.use(async (req, res, next) => {
     await getDb()
     next()
   } catch (e) {
-    res.status(500).json({ error: '数据库初始化失败' })
+    console.error('DB init error:', e)
+    res.status(500).json({ error: '数据库初始化失败: ' + e.message })
   }
 })
 
