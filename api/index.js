@@ -1,21 +1,10 @@
 const express = require('express')
 const cors = require('cors')
-const { getDb, run, get, all } = require('../server/db')
+const db = require('../server/db')
 
 const app = express()
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
-
-// 确保数据库初始化完成
-app.use(async (req, res, next) => {
-  try {
-    await getDb()
-    next()
-  } catch (e) {
-    console.error('DB init error:', e)
-    res.status(500).json({ error: '数据库初始化失败: ' + e.message })
-  }
-})
 
 // ====== 用户认证 ======
 
@@ -24,17 +13,17 @@ app.post('/api/register', (req, res) => {
   if (!username || !password) return res.status(400).json({ error: '用户名和密码不能为空' })
   if (password.length < 6) return res.status(400).json({ error: '密码至少6位' })
   try {
-    run('INSERT INTO users (username, password, avatar) VALUES (?, ?, ?)', [username, password, avatar || '🐱'])
-    res.json({ username, avatar: avatar || '🐱' })
+    const user = db.createUser(username, password, avatar)
+    res.json({ username: user.username, avatar: user.avatar })
   } catch (e) {
-    if (e.message && e.message.includes('UNIQUE')) return res.status(400).json({ error: '用户名已存在' })
+    if (e.message === 'UNIQUE') return res.status(400).json({ error: '用户名已存在' })
     res.status(500).json({ error: '注册失败' })
   }
 })
 
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body
-  const user = get('SELECT * FROM users WHERE username = ?', [username])
+  const user = db.findUser(username)
   if (!user) return res.status(400).json({ error: '用户不存在' })
   if (user.password !== password) return res.status(400).json({ error: '密码错误' })
   res.json({ username: user.username, avatar: user.avatar })
@@ -44,21 +33,19 @@ app.post('/api/login', (req, res) => {
 
 app.get('/api/bookings', (req, res) => {
   const { username } = req.query
-  const rows = all('SELECT * FROM bookings WHERE username = ? ORDER BY created_at DESC', [username || ''])
-  res.json(rows)
+  res.json(db.getBookings(username || ''))
 })
 
 app.post('/api/bookings', (req, res) => {
   const { catId, catName, date, time, people, name, phone, username } = req.body
   if (!catId || !date || !time || !name || !username) return res.status(400).json({ error: '信息不完整' })
   const id = 'BK' + Date.now().toString(36).toUpperCase().slice(-8)
-  run('INSERT INTO bookings (id, username, cat_id, cat_name, date, time, people, name, phone) VALUES (?,?,?,?,?,?,?,?,?)',
-    [id, username, catId, catName, date, time, people || 1, name, phone || ''])
+  db.createBooking({ id, username, cat_id: catId, cat_name: catName, date, time, people: people || 1, name, phone: phone || '', created_at: db.now() })
   res.json({ id })
 })
 
 app.delete('/api/bookings/:id', (req, res) => {
-  run('DELETE FROM bookings WHERE id = ?', [req.params.id])
+  db.deleteBooking(req.params.id)
   res.json({ success: true })
 })
 
@@ -66,41 +53,33 @@ app.delete('/api/bookings/:id', (req, res) => {
 
 app.get('/api/works', (req, res) => {
   const { username } = req.query
-  const rows = all('SELECT * FROM works WHERE username = ? ORDER BY created_at DESC', [username || ''])
-  res.json(rows)
+  res.json(db.getWorks(username || ''))
 })
 
 app.post('/api/works', (req, res) => {
   const { catId, image, desc, username } = req.body
   if (!catId || !desc || !username) return res.status(400).json({ error: '信息不完整' })
   const id = 'WK' + Date.now().toString(36).toUpperCase().slice(-8)
-  run('INSERT INTO works (id, username, cat_id, image, description) VALUES (?,?,?,?,?)',
-    [id, username, catId, image || '', desc])
+  db.createWork({ id, username, cat_id: catId, image: image || '', description: desc, created_at: db.now() })
   res.json({ id })
 })
 
 app.delete('/api/works/:id', (req, res) => {
-  run('DELETE FROM works WHERE id = ?', [req.params.id])
+  db.deleteWork(req.params.id)
   res.json({ success: true })
 })
 
 // ====== 非遗兴趣投票 ======
 
 app.get('/api/interests', (req, res) => {
-  const rows = all('SELECT ich_name, COUNT(*) as count FROM interests GROUP BY ich_name ORDER BY count DESC')
-  const result = {}
-  rows.forEach(r => { result[r.ich_name] = r.count })
-  res.json(result)
+  res.json(db.getInterests())
 })
 
 app.post('/api/interests', (req, res) => {
   const { ichName, username } = req.body
   if (!ichName || !username) return res.status(400).json({ error: '信息不完整' })
-  try {
-    run('INSERT INTO interests (ich_name, username) VALUES (?, ?)', [ichName, username])
-  } catch (e) { /* 忽略重复投票 */ }
-  const count = get('SELECT COUNT(*) as count FROM interests WHERE ich_name = ?', [ichName])
-  res.json({ count: count ? count.count : 0 })
+  db.addInterest(ichName, username)
+  res.json({ count: db.countInterest(ichName) })
 })
 
 module.exports = app
