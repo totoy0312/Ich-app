@@ -36,9 +36,7 @@ function doRegister() {
   if (props.users[u]) { regError.value = '用户名已存在'; return }
   props.users[u] = { password: p, avatar: regAvatar.value }
   regName.value = ''; regPass.value = ''; regAvatar.value = '🐱'
-  tab.value = 'login'
-  loginError.value = '注册成功，请登录~'
-  setTimeout(() => { loginError.value = '' }, 2000)
+  emit('login', { username: u, avatar: regAvatar.value })
 }
 </script>
 
