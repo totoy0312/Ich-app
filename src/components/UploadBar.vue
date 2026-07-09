@@ -14,7 +14,7 @@ const fileInput = ref(null)
 const canUpload = computed(() => catId.value && imageData.value && desc.value.trim())
 
 function resizeImage(file) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       const img = new Image()
@@ -28,16 +28,22 @@ function resizeImage(file) {
         canvas.getContext('2d').drawImage(img, 0, 0, w, h)
         resolve(canvas.toDataURL('image/jpeg', 0.8))
       }
+      img.onerror = () => reject(new Error('无法解析图片文件'))
       img.src = e.target.result
     }
+    reader.onerror = () => reject(new Error('无法读取文件'))
     reader.readAsDataURL(file)
   })
 }
 
 async function handleFile(file) {
   if (!file || !file.type.startsWith('image/')) return
-  imageName.value = file.name
-  imageData.value = await resizeImage(file)
+  try {
+    imageName.value = file.name
+    imageData.value = await resizeImage(file)
+  } catch (e) {
+    console.error('图片加载失败:', e)
+  }
 }
 
 function onFileChange(e) {
@@ -85,7 +91,7 @@ function doUpload() {
       @dragleave="onDragLeave"
       @drop="onDrop"
     >
-      <input ref="fileInput" type="file" accept="image/*" hidden @change="onFileChange">
+      <input ref="fileInput" type="file" accept="image/*" class="visually-hidden" @change="onFileChange">
       <template v-if="imageData">
         <img :src="imageData" class="upload-preview">
         <div class="upload-overlay">
