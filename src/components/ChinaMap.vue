@@ -1,11 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { api } from '../api.js'
 
 defineEmits(['navigate'])
 
 const hovered = ref(null)
 const tooltipStyle = ref({})
-const interests = ref(JSON.parse(localStorage.getItem('ich_interests') || '{}'))
+const interests = ref({})
 const voted = ref(null)
 
 const regions = [
@@ -121,12 +122,20 @@ function onEnter(r, e) {
 }
 function onTooltipEnter() { clearTimeout(leaveTimer) }
 
-function onVote(ichName) {
-  if (!interests.value[ichName]) interests.value[ichName] = 0
-  interests.value[ichName]++
-  localStorage.setItem('ich_interests', JSON.stringify(interests.value))
-  voted.value = ichName
-  setTimeout(() => { voted.value = null }, 1500)
+const currentUser = JSON.parse(localStorage.getItem('ich_user') || 'null')
+
+onMounted(async () => {
+  try { interests.value = await api.getInterests() } catch {}
+})
+
+async function onVote(ichName) {
+  if (!currentUser) return
+  try {
+    await api.voteInterest(ichName, currentUser.username)
+    interests.value = await api.getInterests()
+    voted.value = ichName
+    setTimeout(() => { voted.value = null }, 1500)
+  } catch {}
 }
 
 function voteCount(name) { return interests.value[name] || 0 }

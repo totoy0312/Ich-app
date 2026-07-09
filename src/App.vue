@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { CATEGORIES, TIME_SLOTS, VIDEO_BGS, LS } from './data.js'
+import { CATEGORIES, TIME_SLOTS, VIDEO_BGS } from './data.js'
+import { api } from './api.js'
 import AppHeader from './components/AppHeader.vue'
 import HeroBanner from './components/HeroBanner.vue'
 import CategoryCard from './components/CategoryCard.vue'
@@ -14,8 +15,8 @@ import ChinaMap from './components/ChinaMap.vue'
 import ParticleBg from './components/ParticleBg.vue'
 
 // ---- 用户认证 ----
-const users = ref(LS.get('users', {}))
-const currentUser = ref(LS.get('currentUser', null))
+const currentUser = ref(JSON.parse(localStorage.getItem('ich_user') || 'null'))
+watch(currentUser, v => localStorage.setItem('ich_user', JSON.stringify(v)), { deep: true })
 
 // ---- 页面状态 ----
 const page = ref('home')
@@ -24,8 +25,9 @@ const myTab = ref('bookings')
 const currentCatId = ref('papercut')
 
 // ---- 业务数据 ----
-const bookings = ref(LS.get('bookings', []))
-const works = ref(LS.get('works', []))
+const bookings = ref([])
+const works = ref([])
+const loading = ref(false)
 
 // ---- 弹窗 ----
 const showModal = ref(false)
@@ -35,18 +37,18 @@ const videoTitle = ref('')
 
 // ---- 计算属性 ----
 const currentCat = computed(() => CATEGORIES.find(c => c.id === currentCatId.value) || CATEGORIES[0])
-const myBookings = computed(() =>
-  bookings.value.filter(b => b.username === currentUser.value?.username).reverse()
-)
-const myWorks = computed(() =>
-  works.value.filter(w => w.username === currentUser.value?.username).reverse()
-)
+const myBookings = computed(() => bookings.value.filter(b => b.username === currentUser.value?.username).reverse())
+const myWorks = computed(() => works.value.filter(w => w.username === currentUser.value?.username).reverse())
 
-// ---- 持久化 ----
-watch(users, v => LS.set('users', v), { deep: true })
-watch(currentUser, v => LS.set('currentUser', v), { deep: true })
-watch(bookings, v => LS.set('bookings', v), { deep: true })
-watch(works, v => LS.set('works', v), { deep: true })
+// ---- 数据加载 ----
+async function loadBookings() {
+  if (!currentUser.value) return
+  try { bookings.value = await api.getBookings(currentUser.value.username) } catch {}
+}
+async function loadWorks() {
+  if (!currentUser.value) return
+  try { works.value = await api.getWorks(currentUser.value.username) } catch {}
+}
 
 // ---- 导航 ----
 function goHome() { page.value = 'home'; detailTab.value = 'articles' }
@@ -54,36 +56,38 @@ function openCategory(cat) { currentCatId.value = cat.id; page.value = 'detail';
 function openVideo(v) { videoTitle.value = v.title; showVideo.value = true }
 
 // ---- 认证 ----
-function onLogin(user) { currentUser.value = user; page.value = 'home' }
+async function onLogin(user) {
+  currentUser.value = user
+  page.value = 'home'
+  await Promise.all([loadBookings(), loadWorks()])
+}
 function logout() { currentUser.value = null; page.value = 'auth' }
 
 // ---- 预约 ----
-function submitBooking(data) {
-  bookings.value.push({
-    id: 'BK' + Date.now().toString(36).toUpperCase().slice(-8),
-    ...data, username: currentUser.value.username,
-    createdAt: new Date().toLocaleString(),
-  })
-  const tl = TIME_SLOTS.find(s => s.value === data.time)
-  modalMsg.value = `已预约【${data.catName}】体验课，${data.date} ${tl ? tl.label : ''}，我们不见不散！`
-  showModal.value = true
+async function submitBooking(data) {
+  try {
+    await api.createBooking({ ...data, username: currentUser.value.username })
+    await loadBookings()
+    const tl = TIME_SLOTS.find(s => s.value === data.time)
+    modalMsg.value = `已预约【${data.catName}】体验课，${data.date} ${tl ? tl.label : ''}，我们不见不散！`
+    showModal.value = true
+  } catch (e) { alert(e.message) }
 }
 
 // ---- 作品 ----
-function deleteWork(workId) { works.value = works.value.filter(w => w.id !== workId) }
-
-function submitWork(data) {
-  const colors = ['#f5e6d3','#e8d5c8','#dce5e0','#e0dce5','#f0e5d8','#fdf0e0']
-  works.value.push({
-    id: 'WK' + Date.now().toString(36).toUpperCase().slice(-8),
-    ...data, username: currentUser.value.username,
-    bg: colors[Math.floor(Math.random() * colors.length)],
-    time: new Date().toLocaleString(),
-  })
+async function deleteWork(workId) {
+  try { await api.deleteWork(workId); await loadWorks() } catch {}
+}
+async function submitWork(data) {
+  try {
+    await api.createWork({ ...data, username: currentUser.value.username })
+    await loadWorks()
+  } catch (e) { alert(e.message) }
 }
 
 // ---- 初始化 ----
 if (!currentUser.value) page.value = 'auth'
+else { loadBookings(); loadWorks() }
 </script>
 
 <template>
@@ -95,13 +99,11 @@ if (!currentUser.value) page.value = 'auth'
     />
 
     <Transition name="page-fade" mode="out-in">
-      <!-- 认证页 -->
       <AuthPage
         v-if="page === 'auth'" key="auth"
-        :users="users" @login="onLogin"
+        @login="onLogin"
       />
 
-      <!-- 首页 -->
       <div v-else-if="page === 'home'" key="home">
         <HeroBanner />
         <div class="content-area">
@@ -113,21 +115,18 @@ if (!currentUser.value) page.value = 'auth'
         </div>
       </div>
 
-      <!-- 分类详情 -->
       <DetailPage
         v-else-if="page === 'detail'" key="detail"
         :category="currentCat" :detail-tab="detailTab" :video-bgs="VIDEO_BGS"
         @back="goHome" @tab-change="detailTab = $event" @play-video="openVideo"
       />
 
-      <!-- 预约 -->
       <BookingPage
         v-else-if="page === 'booking'" key="booking"
         :categories="CATEGORIES" :time-slots="TIME_SLOTS" :bookings="bookings"
         @submit="submitBooking" @back="goHome"
       />
 
-      <!-- 我的 -->
       <MyPage
         v-else key="my"
         :bookings="myBookings" :works="myWorks"

@@ -1,42 +1,44 @@
 <script setup>
 import { ref } from 'vue'
 import { AVATARS } from '../data.js'
+import { api } from '../api.js'
 
-const props = defineProps(['users'])
 const emit = defineEmits(['login'])
 
 const tab = ref('login')
-
-// 登录
 const loginName = ref('')
 const loginPass = ref('')
 const loginError = ref('')
-
-// 注册
 const regName = ref('')
 const regPass = ref('')
 const regAvatar = ref('🐱')
 const regError = ref('')
 
-function doLogin() {
+async function doLogin() {
   const u = loginName.value.trim()
   const p = loginPass.value.trim()
   if (!u || !p) { loginError.value = '请填写用户名和密码'; return }
-  if (!props.users[u]) { loginError.value = '用户不存在，请先注册'; return }
-  if (props.users[u].password !== p) { loginError.value = '密码错误'; return }
-  loginError.value = ''
-  emit('login', { username: u, avatar: props.users[u].avatar })
+  try {
+    const user = await api.login(u, p)
+    loginError.value = ''
+    emit('login', user)
+  } catch (e) {
+    loginError.value = e.message
+  }
 }
 
-function doRegister() {
+async function doRegister() {
   const u = regName.value.trim()
   const p = regPass.value.trim()
   if (!u || !p) { regError.value = '请填写用户名和密码'; return }
   if (p.length < 6) { regError.value = '密码至少6位'; return }
-  if (props.users[u]) { regError.value = '用户名已存在'; return }
-  props.users[u] = { password: p, avatar: regAvatar.value }
-  regName.value = ''; regPass.value = ''; regAvatar.value = '🐱'
-  emit('login', { username: u, avatar: regAvatar.value })
+  try {
+    const user = await api.register(u, p, regAvatar.value)
+    regName.value = ''; regPass.value = ''; regAvatar.value = '🐱'
+    emit('login', user)
+  } catch (e) {
+    regError.value = e.message
+  }
 }
 </script>
 
@@ -52,7 +54,6 @@ function doRegister() {
         <button class="auth-tab" :class="{ active: tab === 'register' }" @click="tab = 'register'">注 册</button>
       </div>
 
-      <!-- 登录 -->
       <div v-if="tab === 'login'">
         <div class="form-group">
           <label>用户名</label>
@@ -66,7 +67,6 @@ function doRegister() {
         <p class="auth-error">{{ loginError }}</p>
       </div>
 
-      <!-- 注册 -->
       <div v-else>
         <div class="form-group">
           <label>用户名</label>
