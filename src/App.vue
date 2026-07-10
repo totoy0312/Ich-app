@@ -134,7 +134,7 @@ else { loadBookings(); loadWorks() }
       <div v-else-if="page === 'home'" key="home">
         <HeroBanner />
         <div class="content-area">
-          <div class="section-title">探 寻 非 遗</div>
+          <div class="section-title">热 门 体 验 课 程</div>
           <div class="cat-grid">
             <CategoryCard v-for="cat in CATEGORIES" :key="cat.id" :category="cat" @select="openCategory" />
           </div>
@@ -172,6 +172,6 @@ else { loadBookings(); loadWorks() }
     <ConfirmModal :show="showModal" :message="modalMsg" @close="showModal = false; page = 'my'; myTab = 'bookings'" />
     <VideoModal :show="showVideo" :title="videoTitle" @close="showVideo = false" />
 
-    <div class="footer"><p>非遗传承 · 指尖上的中国 © 2026</p></div>
+    <div class="footer"><p>指尖上的中国 · 非遗体验课在线预约平台 © 2026</p></div>
   </div>
 </template>

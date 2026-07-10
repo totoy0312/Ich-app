@@ -21,9 +21,9 @@ onMounted(() => {
 
 <template>
   <div class="hero">
-    <p class="subtitle">· 非 物 质 文 化 遗 产 ·</p>
+    <p class="subtitle">· 非遗体验课在线预约平台 ·</p>
     <h2>{{ displayTitle }}<span class="cursor-blink">|</span></h2>
     <div class="deco-line"></div>
-    <p :class="{ 'fade-in': showDesc }">探寻千年技艺，感受东方美学。<br>选择一项非遗文化，开启你的传承之旅。</p>
+    <p :class="{ 'fade-in': showDesc }">连接非遗传承人与爱好者<br>在线预约体验课，上传作品展示，传承指尖技艺</p>
   </div>
 </template>
