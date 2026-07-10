@@ -1,5 +1,5 @@
 <script setup>
-defineProps(['currentPage', 'currentUser'])
+defineProps(['currentPage', 'currentUser', 'isAdmin'])
 defineEmits(['navigate', 'logout'])
 </script>
 
@@ -13,6 +13,7 @@ defineEmits(['navigate', 'logout'])
       <a v-if="currentUser" :class="{ active: currentPage === 'home' }" @click="$emit('navigate', 'home')">首页</a>
       <a v-if="currentUser" :class="{ active: currentPage === 'booking' }" @click="$emit('navigate', 'booking')">预约体验</a>
       <a v-if="currentUser" :class="{ active: currentPage === 'my' }" @click="$emit('navigate', 'my')">我的</a>
+      <a v-if="isAdmin" :class="{ active: currentPage === 'admin' }" @click="$emit('navigate', 'admin')">管理</a>
     </div>
     <div v-if="currentUser" class="user-bar">
       <span class="user-avatar">{{ currentUser.avatar }}</span>

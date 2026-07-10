@@ -12,6 +12,7 @@ import AuthPage from './components/AuthPage.vue'
 import ConfirmModal from './components/ConfirmModal.vue'
 import VideoModal from './components/VideoModal.vue'
 import ChinaMap from './components/ChinaMap.vue'
+import AdminPage from './components/AdminPage.vue'
 import ParticleBg from './components/ParticleBg.vue'
 
 // ---- 用户认证 ----
@@ -39,6 +40,7 @@ const videoTitle = ref('')
 const currentCat = computed(() => CATEGORIES.find(c => c.id === currentCatId.value) || CATEGORIES[0])
 const myBookings = computed(() => bookings.value.filter(b => b.username === currentUser.value?.username).reverse())
 const myWorks = computed(() => works.value.filter(w => w.username === currentUser.value?.username).reverse())
+const isAdmin = computed(() => currentUser.value?.is_admin === true)
 
 // ---- 数据加载 ----
 async function loadBookings() {
@@ -50,6 +52,23 @@ async function loadWorks() {
   try { works.value = await api.getWorks(currentUser.value.username) } catch {}
 }
 
+// ---- 通知 ----
+const notifications = ref([])
+const unreadCount = ref(0)
+
+async function loadNotifications() {
+  if (!currentUser.value) return
+  try {
+    notifications.value = await api.getNotifications(currentUser.value.username)
+    unreadCount.value = await api.getUnreadCount(currentUser.value.username)
+  } catch {}
+}
+
+async function markRead(id) {
+  await api.markNotificationRead(id)
+  await loadNotifications()
+}
+
 // ---- 导航 ----
 function goHome() { page.value = 'home'; detailTab.value = 'articles' }
 function openCategory(cat) { currentCatId.value = cat.id; page.value = 'detail'; detailTab.value = 'articles' }
@@ -59,7 +78,7 @@ function openVideo(v) { videoTitle.value = v.title; showVideo.value = true }
 async function onLogin(user) {
   currentUser.value = user
   page.value = 'home'
-  await Promise.all([loadBookings(), loadWorks()])
+  await Promise.all([loadBookings(), loadWorks(), loadNotifications()])
 }
 function logout() { currentUser.value = null; page.value = 'auth' }
 
@@ -96,7 +115,7 @@ else { loadBookings(); loadWorks() }
   <div class="app">
     <ParticleBg />
     <AppHeader
-      :current-page="page" :current-user="currentUser"
+      :current-page="page" :current-user="currentUser" :is-admin="isAdmin"
       @navigate="page = $event" @logout="logout"
     />
 
@@ -130,10 +149,17 @@ else { loadBookings(); loadWorks() }
       />
 
       <MyPage
-        v-else key="my"
-        :bookings="myBookings" :works="myWorks"
+        v-else-if="page === 'my'" key="my"
+        :bookings="myBookings" :works="myWorks" :notifications="notifications" :unread-count="unreadCount"
         :categories="CATEGORIES" :time-slots="TIME_SLOTS" :my-tab="myTab"
-        @tab-change="myTab = $event" @upload-work="submitWork" @delete-work="deleteWork" @back="goHome"
+        @tab-change="myTab = $event" @upload-work="submitWork" @delete-work="deleteWork"
+        @mark-read="markRead" @back="goHome"
+      />
+
+      <AdminPage
+        v-else-if="page === 'admin'" key="admin"
+        :current-user="currentUser"
+        @back="goHome"
       />
     </Transition>
 

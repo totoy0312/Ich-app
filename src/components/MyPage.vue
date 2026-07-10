@@ -3,11 +3,12 @@ import BookingRecord from './BookingRecord.vue'
 import WorkCard from './WorkCard.vue'
 import UploadBar from './UploadBar.vue'
 
-const props = defineProps(['bookings', 'works', 'categories', 'timeSlots', 'myTab'])
-const emit = defineEmits(['tab-change', 'upload-work', 'back', 'delete-work'])
+const props = defineProps(['bookings', 'works', 'notifications', 'unreadCount', 'categories', 'timeSlots', 'myTab'])
+const emit = defineEmits(['tab-change', 'upload-work', 'back', 'delete-work', 'mark-read'])
 
 function getCat(id) { return props.categories.find(c => c.id === id) || { icon:'📌', name:'未知' } }
 function timeLabel(val) { const s = props.timeSlots.find(s => s.value === val); return s ? s.label : '—' }
+function formatDate(d) { return d ? new Date(d).toLocaleDateString('zh-CN') : '' }
 </script>
 
 <template>
@@ -17,6 +18,10 @@ function timeLabel(val) { const s = props.timeSlots.find(s => s.value === val); 
     <div class="my-tabs">
       <button class="my-tab" :class="{ active: myTab === 'bookings' }" @click="emit('tab-change', 'bookings')">📅 我的预约</button>
       <button class="my-tab" :class="{ active: myTab === 'works' }" @click="emit('tab-change', 'works')">🖼️ 作品展示</button>
+      <button class="my-tab" :class="{ active: myTab === 'notifications' }" @click="emit('tab-change', 'notifications')">
+        🔔 消息
+        <span v-if="unreadCount > 0" class="unread-badge">{{ unreadCount }}</span>
+      </button>
     </div>
 
     <div v-if="myTab === 'bookings'">
@@ -35,6 +40,18 @@ function timeLabel(val) { const s = props.timeSlots.find(s => s.value === val); 
           :category-icon="getCat(w.catId).icon" :category-name="getCat(w.catId).name"
           @delete="emit('delete-work', $event)"
         />
+      </div>
+    </div>
+
+    <div v-if="myTab === 'notifications'">
+      <div v-if="!notifications || notifications.length === 0" class="empty-state"><div class="empty-icon">🔔</div><p>暂无消息通知</p></div>
+      <div v-for="n in notifications" :key="n.id" class="notify-card" :class="{ unread: !n.is_read }">
+        <div class="notify-header">
+          <h4>{{ n.title }}</h4>
+          <span class="notify-time">{{ formatDate(n.created_at) }}</span>
+        </div>
+        <p>{{ n.message }}</p>
+        <button v-if="!n.is_read" class="mark-read-btn" @click="emit('mark-read', n.id)">标记已读</button>
       </div>
     </div>
   </div>
