@@ -533,7 +533,7 @@ body {
 }
 .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
 .form-actions button { padding: 10px 28px; border-radius: 10px; border: 1px solid var(--border); background: #fff; font-size: 15px; cursor: pointer; }
-.form-actions .btn-primary { border: none; }
+.form-actions .btn-primary { border: none; background: var(--red); color: #fff; font-weight: 700; }
 
 /* ====== USER MANAGER ====== */
 .expand-panel {
