@@ -22,7 +22,7 @@ function getCurrentUser() {
 
 function requireAdmin() {
   const user = getCurrentUser()
-  if (!user || !user.is_admin) throw new Error('需要管理员权限')
+  if (!user || !user.is_admin) throw new Error('需要管理员权限。当前用户: ' + JSON.stringify(user))
   return user
 }
 
@@ -201,7 +201,7 @@ export const api = {
       cat_id: item.catId, type: item.type, title: item.title,
       content: item.content, description: item.description || '',
     })
-    if (error) throw new Error('创建失败')
+    if (error) throw new Error('创建失败: ' + error.message)
   },
 
   async updateContent(id, updates) {
@@ -209,7 +209,7 @@ export const api = {
     const { error } = await supabase.from('ich_content').update({
       ...updates, updated_at: new Date().toISOString()
     }).eq('id', id)
-    if (error) throw new Error('更新失败')
+    if (error) throw new Error('更新失败: ' + error.message)
   },
 
   async deleteContent(id) {

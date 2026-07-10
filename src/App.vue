@@ -61,7 +61,12 @@ async function loadNotifications() {
   try {
     notifications.value = await api.getNotifications(currentUser.value.username)
     unreadCount.value = await api.getUnreadCount(currentUser.value.username)
-  } catch {}
+  } catch (e) { console.error('loadNotifications:', e) }
+}
+
+function onMyTabChange(tab) {
+  myTab.value = tab
+  if (tab === 'notifications') loadNotifications()
 }
 
 async function markRead(id) {
@@ -77,6 +82,7 @@ function openVideo(v) { videoTitle.value = v.title; showVideo.value = true }
 // ---- 认证 ----
 async function onLogin(user) {
   currentUser.value = user
+  localStorage.setItem('ich_user', JSON.stringify(user))
   page.value = 'home'
   await Promise.all([loadBookings(), loadWorks(), loadNotifications()])
 }
@@ -152,7 +158,7 @@ else { loadBookings(); loadWorks() }
         v-else-if="page === 'my'" key="my"
         :bookings="myBookings" :works="myWorks" :notifications="notifications" :unread-count="unreadCount"
         :categories="CATEGORIES" :time-slots="TIME_SLOTS" :my-tab="myTab"
-        @tab-change="myTab = $event" @upload-work="submitWork" @delete-work="deleteWork"
+        @tab-change="onMyTabChange" @upload-work="submitWork" @delete-work="deleteWork"
         @mark-read="markRead" @back="goHome"
       />
 
