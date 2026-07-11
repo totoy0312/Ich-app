@@ -43,7 +43,7 @@ async function doRegister() {
 </script>
 
 <template>
-  <div class="content-area" style="max-width:460px;margin:60px auto;">
+  <div class="content-area auth-wrapper">
     <div class="auth-card">
       <div class="auth-icon">🏮</div>
       <h2 class="auth-title">非遗传承</h2>

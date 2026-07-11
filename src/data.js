@@ -82,8 +82,3 @@ export const TIME_SLOTS = [
 export const VIDEO_BGS = ['#f5e6d3','#e8d5c8','#dce5e0','#e0dce5','#f0e5d8','#e5ddd0']
 
 export const AVATARS = ['🐱','🐶','🐰','🐻','🐼','🐨','🦊','🐸','🐵','🦁','🐮','🐷','🐙','🦄','🐳','🐥']
-
-export const LS = {
-  get(k, d) { try { const v = localStorage.getItem('ich_' + k); return v ? JSON.parse(v) : d } catch { return d } },
-  set(k, v) { localStorage.setItem('ich_' + k, JSON.stringify(v)) },
-}

@@ -2,5 +2,3 @@ node_modules
 .vs
 *.local
 .DS_Store
-.vercel
-data.db*
